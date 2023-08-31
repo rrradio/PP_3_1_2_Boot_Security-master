@@ -3,41 +3,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
     <title>Update user</title>
 </head>
 <body>
 
-<form th:method="PATCH" th:action="@{/{id}(id=${user.getId()})}" th:object="${user}">
+<form th:method="PATCH" th:action="@{/{id}(id=${user.getId()})}" th:object="${user}" style=" font-weight:bold; font-size:20px; display: block; margin: 0 auto; text-align: center">
   <label for="name">Enter name: </label>
-  <input type="text" th:field="*{username}" id="name" size="20">
+    <br/>
+  <input type="text" th:field="*{username}" id="name">
   <div style="color:darkred" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"> nameErr </div>
     <br/>
     <label for="age">Enter  age:   </label>
-    <input type="text" th:field="*{age}" id="age" size="20">
+    <br/>
+    <input type="text" th:field="*{age}" id="age">
   <div style="color:darkred" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"> ageErr </div>
   <br/>
     <label for="email">Enter email:   </label>
-    <input type="text" th:field="*{email}" id="email" size="20">
+    <br/>
+    <input type="text" th:field="*{email}" id="email">
   <div style="color:darkred" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"> mailErr </div>
     <br/>
    <label for="password"> Enter password: </label>
-   <input type="password" th:field="*{password}" id="password" size="20">
+    <br/>
+   <input type="password" th:field="*{password}" id="password">
   <div style="color:darkred" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"> passErr </div>
     <br/>
 
-    <label for="users_roles">input role: </label>
+    <label for="users_roles">Select roles </label>
+    <br/>
     <select id="users_roles" name="users_roles" multiple size="2" >
         <option th:each="role : ${users_roles}"
                 th:value="${role}"
                 th:text="${role}">
         </option>
     </select>
-
-  <input type="submit" value="Update">
+    <br/>
+  <input type="submit" value="Update" class="btn btn-primary">
 </form>
 
 <br/>
-<a href="/logout">logout</a>
+<a href="/logout" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;" >Logout</a>
 
 </body>
 </html>

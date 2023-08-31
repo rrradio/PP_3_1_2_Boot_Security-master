@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entities.Role;
@@ -21,6 +22,7 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    @Autowired
     public UserService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
@@ -58,6 +60,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void saveUser(User user, String[] selectedRoles) {
+        String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+        user.setPassword(encodedPassword);
         Set<Role> roles = new HashSet<>();
         Arrays.stream(selectedRoles).forEach(a -> roles.add(roleRepository.findRoleByName(a)));
         user.setRoles(roles);
@@ -82,6 +86,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void update(Long id, User user, String[] selectedRoles) {
+        String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+        user.setPassword(encodedPassword);
         User neew = getUserById(id);
         neew.setUsername(user.getUsername());
         neew.setAge(user.getAge());
@@ -92,4 +98,6 @@ public class UserService implements UserDetailsService {
         neew.setRoles(roles);
         userRepository.save(neew);
     }
+
+
 }
