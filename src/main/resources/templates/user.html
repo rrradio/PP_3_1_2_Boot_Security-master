@@ -42,7 +42,6 @@
             <th>Name</th>
             <th>Age</th>
             <th>Email</th>
-<!--            <th>Password</th>-->
             <th>Role</th>
         </tr>
         </thead>
@@ -52,7 +51,6 @@
             <td th:text="${user.getUsername()}">...</td>
             <td th:text="${user.getAge()}">...</td>
             <td th:text="${user.getEmail()}">...</td>
-<!--            <td th:text="${user.getPassword()}">...</td>-->
             <td th:text="${#strings.replace(#strings.replace(#strings.replace(user.roles, 'ROLE_', ''), '[', ''), ']', '')}">...</td>
         </tr>
         </tbody>

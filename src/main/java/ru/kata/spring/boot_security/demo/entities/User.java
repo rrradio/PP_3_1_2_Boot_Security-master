@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -18,12 +19,19 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "Имя не может быть пустым")
+    @Size(min = 2, max = 25, message = "Имя должно быть от 2 до 25 символов")
     private String username;
 
+    @Min(value = 1, message = "Возраст должен быть больше 0")
+    @Max(value = 120, message = "Вряд ли вы такой старый..")
     private int age;
 
+    @Email(message = "Введите реальный адрес")
+    @NotEmpty(message = "Введите адрес почты")
     private String email;
 
+    @NotEmpty
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)

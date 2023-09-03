@@ -65,13 +65,6 @@
                                 <td style="font-family: Helvetica,sans-serif;" th:text="${user.email}"></td>
                                 <td style="font-family: Helvetica,sans-serif;" th:text="${#strings.replace(#strings.replace(#strings.replace(user.roles, 'ROLE_', ''), '[', ''), ']', '')}"></td>
                                 <td >
-<!--                                    <div class="form-row text-center">-->
-<!--                                        <div class="col-12">-->
-<!--                                            <button  id = "edit-user" type="button" class="btn btn-primary" data-toggle="modal"-->
-<!--                                                     data-target="#userEditDialog" th:data-userId="${user.id}">   Edit-->
-<!--                                            </button>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
                                     <form  th:action="@{/{id}/edit(id=${user.getId()})}">
                                         <button type="submit" class="btn btn-primary">Edit user</button>
                                     </form>
@@ -131,9 +124,6 @@
 
                     </div>
                 </div>
-
-
-
 
             </div>
 
@@ -199,64 +189,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-<!--<script>-->
-<!--    $('#userEditDialog').on('shown.bs.modal', function (event) {-->
-<!--        let button = $(event.relatedTarget)-->
-<!--        let userId = button.data('userId')-->
 
-<!--        if (userId) {-->
-<!--            $.get({-->
-<!--                url: '/api/v1/user/' + userId,-->
-<!--                type: 'GET',-->
-<!--                success: (data) => {-->
-<!--                    let modal = $(this)-->
-<!--                    modal.find('#user-id').val(data.id)-->
-<!--                    modal.find('#user-name').val(data.username)-->
-<!--                    modal.find('#user-age').val(data.age)-->
-<!--                    modal.find('#user-email').val(data.email)-->
-<!--                    modal.find('#user-password').val(data.password)-->
-<!--                    modal.find('#users-roles').val(data.role)-->
-<!--                },-->
-<!--                error: (err) => {-->
-<!--                    alert(err);-->
-<!--                }-->
-
-<!--            });-->
-<!--        }-->
-
-<!--    })-->
-
-<!--    $('#save-user-button').click(function () {-->
-<!--        let modal = $('#userEditDialog')-->
-<!--        let user = {-->
-<!--            username:modal.find('#user-name').val(),-->
-<!--            age:modal.find('#user-age').val(),-->
-<!--            email:modal.find('#user-email'),-->
-<!--            password:modal.find('#user-password').val(),-->
-<!--            role:modal.find('#users-roles').val()-->
-<!--        };-->
-<!--        if (modal.find('#user-id').val()) {-->
-<!--            user.id = modal.find('#user-id').val()-->
-<!--        }-->
-<!--        $.ajax({-->
-<!--            url: '/api/v1/user',-->
-<!--            type: 'POST',-->
-<!--            data: JSON.stringify(user),-->
-<!--            contentType: "application/json; charset=utf-8",-->
-<!--            dataType: 'json',-->
-<!--            success: () => {-->
-<!--                location.reload()-->
-<!--            },-->
-<!--            error: (err) => {-->
-<!--                alert(err);-->
-<!--            }-->
-<!--        })-->
-<!--        modal.modal('hide');-->
-
-<!--    });-->
-
-
-<!--</script>-->
 
 </body>
 </html>

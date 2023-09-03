@@ -61,7 +61,7 @@ public class AdminController {
     }
 
     @PatchMapping("/{id}")
-    public String update(Model model, @ModelAttribute("user") User user, @PathVariable("id") Long id,
+    public String update(@ModelAttribute("user") User user, @PathVariable("id") Long id,
                          @RequestParam("users_roles") String[] selectedRoles) {
         userService.update(id, user, selectedRoles);
         return REDIRECT;
