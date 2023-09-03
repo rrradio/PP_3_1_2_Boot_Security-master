@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -41,8 +43,12 @@ public class AdminController {
 
 
     @PostMapping()
-    public String createUser(@ModelAttribute("user")  User user,
+    public String createUser(@ModelAttribute("user")  @Valid User user,
+                             BindingResult bindingResult,
                              @RequestParam("users_roles") String[] selectedRoles) {
+        if (bindingResult.hasErrors())
+            return "admin/error";
+
         userService.saveUser(user, selectedRoles);
         return REDIRECT;
     }
@@ -61,8 +67,12 @@ public class AdminController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") Long id,
+    public String update(@ModelAttribute("user") @Valid  User user,
+                         BindingResult bindingResult, @PathVariable("id") Long id,
                          @RequestParam("users_roles") String[] selectedRoles) {
+        if (bindingResult.hasErrors())
+            return "/admin/edit";
+
         userService.update(id, user, selectedRoles);
         return REDIRECT;
     }
