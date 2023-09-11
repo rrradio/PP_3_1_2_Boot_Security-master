@@ -22,6 +22,7 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+
     @Autowired
     public UserService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
@@ -57,18 +58,6 @@ public class UserService implements UserDetailsService {
     public List<User> getUsers() {
         return userRepository.findAll();
     }
-
-    @Transactional
-    public void saveUser(User user, String[] selectedRoles) {
-        String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
-        user.setPassword(encodedPassword);
-        Set<Role> roles = new HashSet<>();
-        Arrays.stream(selectedRoles).forEach(a -> roles.add(roleRepository.findRoleByName(a)));
-        user.setRoles(roles);
-
-        userRepository.save(user);
-    }
-
 
     @Transactional
     public void deleteById(Long id) {

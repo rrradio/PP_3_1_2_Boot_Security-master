@@ -2,15 +2,11 @@ package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
-
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -26,8 +22,6 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-
-
     @GetMapping("/admin/allUsers")
     public String getPanel(ModelMap modelMap, Principal principal) {
         List<User> users = userService.getUsers();
@@ -41,40 +35,11 @@ public class AdminController {
     }
 
 
-
-    @PostMapping()
-    public String createUser(@ModelAttribute("user")  @Valid User user,
-                             BindingResult bindingResult,
-                             @RequestParam("users_roles") String[] selectedRoles) {
-        if (bindingResult.hasErrors())
-            return "admin/error";
-
-        userService.saveUser(user, selectedRoles);
-        return REDIRECT;
-    }
-
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         userService.deleteById(id);
         return REDIRECT;
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("users_roles", roleService.getRoles());
-        return "/admin/edit";
-    }
-
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") @Valid  User user,
-                         BindingResult bindingResult, @PathVariable("id") Long id,
-                         @RequestParam("users_roles") String[] selectedRoles) {
-        if (bindingResult.hasErrors())
-            return "/admin/edit";
-
-        userService.update(id, user, selectedRoles);
-        return REDIRECT;
-    }
 
 }

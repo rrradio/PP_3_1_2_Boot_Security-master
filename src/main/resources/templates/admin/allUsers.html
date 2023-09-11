@@ -13,6 +13,17 @@
 </head>
 <body>
 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
 
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
@@ -44,7 +55,7 @@
                     <div id="table" class="tab-pane fade show active"  role="tabpanel" aria-labelledby="nav-home-tab">
                         <h4>All users</h4>
                         <br/>
-                        <table class="table table-striped" style="background-color: white;">
+                        <table class="table table-striped" id="tableOfUsers" style="background-color: white;">
                             <thead>
                             <tr>
                                 <th style="text-align: center;">ID</th>
@@ -65,15 +76,35 @@
                                 <td style="font-family: Helvetica,sans-serif;" th:text="${user.email}"></td>
                                 <td style="font-family: Helvetica,sans-serif;" th:text="${#strings.replace(#strings.replace(#strings.replace(user.roles, 'ROLE_', ''), '[', ''), ']', '')}"></td>
                                 <td >
-                                    <form  th:action="@{/{id}/edit(id=${user.getId()})}">
-                                        <button type="submit" class="btn btn-primary">Edit user</button>
-                                    </form>
+                                    <div class="form-row text-center">
+                                        <div class="col-12">
+                                            <button class="btn btn-primary buttonEdit " data-target="#myModal" data-toggle="modal"
+                                                    th:data-ID="${user.id}"
+                                                    th:data-username="${user.username}"
+                                                    th:data-age="${user.age}"
+                                                    th:data-email="${user.email}"
+                                                    th:data-password="${user.password}"
+                                                    th:data-roles="${user.roles}">
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    <form th:method="DELETE" th:action="@{/{id}(id=${user.getId()})}">
-                                        <input type="submit" value="Delete" class="btn btn-danger" />
-                                    </form>
+                                    <div class="form-row text-center">
+                                        <div class="col-12">
+                                            <button class="btn btn-danger buttonDelete"   data-target="#myDeleteModal" data-toggle="modal"
+                                                    th:data-ID="${user.id}"
+                                                    th:data-username="${user.username}"
+                                                    th:data-age="${user.age}"
+                                                    th:data-email="${user.email}"
+                                                    th:data-password="${user.password}"
+                                                    th:data-roles="${user.roles}"
+                                                    type="button">                    Delete
+                                            </button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
@@ -86,38 +117,31 @@
                         <br/>
 
                         <div class="container" style="display: flex; justify-content: center; " >
-
-                        <form th:method="POST" th:action="@{/}" th:object="${newUser}">
-                            <label for="username" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;" > Name </label>
-                            <input type="text" class="form-control" placeholder="name" th:field="*{username}" id="username"  >
-                            <div style="color:darkred" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"> nameErr </div>
+                            <form id="addForm">
+                            <label for="username"  style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;" > Name </label>
+                            <input type="text" class="form-control" placeholder="name"  id="username"  >
                             <br/>
 
                             <label for="age" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Age </label>
-                            <input type="text" class="form-control" placeholder="age"  th:field="*{age}" id="age" >
-                            <div style="color:darkred" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"> ageErr </div>
+                            <input type="text" class="form-control" placeholder="age"  id="age" >
                             <br/>
 
                             <label for="email" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Email </label>
-                            <input type="text" class="form-control" placeholder="email"  th:field="*{email}" id="email" >
-                            <div style="color:darkred" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"> mailErr </div>
+                            <input type="text" class="form-control" placeholder="email"   id="email" >
                             <br/>
 
                             <label for="password" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Password </label>
-                            <input type="password" class="form-control" placeholder="password"  th:field="*{password}" id="password" >
-                            <div style="color:darkred" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"> mailErr </div>
+                            <input type="password" class="form-control" placeholder="password"   id="password" >
                             <br/>
 
                             <label for="users_roles" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Role </label>
                             <select class="form-control" id="users_roles" name="users_roles" multiple size="2" >
-                                <option th:each="role : ${users_roles}"
-                                        th:value="${role}"
-                                        th:text="${role}">
-                                </option>
+                                <option id="roleAddUser" value="2">USER</option>
+                                <option id="roleAddAdmin" value="1">ADMIN</option>
                             </select>
 
                             <br/>
-                            <input type="submit" value="Add new user" class="btn btn-success" style="display: block; margin: 0 auto;">
+                            <input type="submit" value="Add new user" id="new-user-button" class="btn btn-success" style="display: block; margin: 0 auto;">
                         </form>
 
                         </div>
@@ -134,7 +158,7 @@
 </div>
 
 <!-- Modal Edit User -->
-<div class="modal fade" id="userEditDialog" tabindex="-1" role="dialog" aria-labelledby="userEditDialogLabel" aria-hidden="true">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="userEditDialogLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -144,51 +168,268 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <input type="hidden" id = "user-id">
+                <form id="editForm">
                     <div class="form-group">
-                        <label for="user-name" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name   </label>
-                        <input type="text" class="form-control"  id="user-name" size="20">
+                        <label for="user-id" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> ID   </label>
+                        <input type="text" id = "user-id" class="form-control" size="20"   disabled/>
                     </div>
                     <div class="form-group">
-                        <label for="user-age" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Age   </label>
-                        <input type="text" class="form-control"  id="user-age" size="20">
+                        <label for="usernameEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name   </label>
+                        <input type="text" class="form-control" name="username"  id="usernameEdit" size="20">
                     </div>
                     <div class="form-group">
-                        <label for="user-email" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Email  </label>
-                        <input type="text" class="form-control"  id="user-email" size="20">
+                        <label for="ageEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Age   </label>
+                        <input type="text" class="form-control" name = "age"  id="ageEdit" size="20">
                     </div>
                     <div class="form-group">
-                        <label for="user-password" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Password  </label>
-                        <input type="password" class="form-control"  id="user-password" size="20">
+                        <label for="emailEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Email  </label>
+                        <input type="text" class="form-control" name = "email"  id="emailEdit" size="20">
                     </div>
-                    <label for="users-roles" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Role</label>
-                    <select id="users-roles" class="form-control" name="users_roles" multiple size="2" >
-                        <option th:each="role : ${users_roles}"
-                                th:value="${role}"
-                                th:text="${role}">
-                        </option>
+                    <div class="form-group">
+                        <label for="passwordEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Password  </label>
+                        <input type="password" class="form-control" name = "password"  id="passwordEdit" size="20">
+                    </div>
+                    <label for="rolesEdit" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Role</label>
+                    <select id="rolesEdit" class="form-control" name="users_roles" multiple size="2" >
+                        <option id="roleNewUser" value="2">USER</option>
+                        <option id="roleNewAdmin" value="1">ADMIN</option>
                     </select>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                <button class="btn btn-primary"  id="save-user-button" type="button">Edit</button>
+                <button class="btn btn-primary" name = "EDIT"  id="edit-user-button" type="submit">Edit</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal Delete User -->
+<div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="userEditDialogLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userDeleteDialogLabel" align="left" >Delete user</h5>
+                <button type="button"  class="close" data-dismiss="modal" aria-label="Close" style="float: right;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteForm">
+                    <div class="form-group">
+                        <label for="userIdDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> ID   </label>
+                        <input type="text" id="userIdDelete"   class="form-control" size="20" name="idDelete"  disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label for="usernameDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name   </label>
+                        <input type="text" id="usernameDelete" class="form-control" name="username"   size="20" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label for="ageDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Age   </label>
+                        <input type="text" id="ageDelete" class="form-control" name = "age"   size="20" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Email  </label>
+                        <input type="text" id="emailDelete" class="form-control" name = "email"   size="20" disabled/>
+                    </div>
+                    <label for="rolesDelete" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Role</label>
+                    <select  class="form-control" id="rolesDelete" name="users_roles" multiple size="2" disabled/>
+                        <option  value="2">USER</option>
+                        <option  value="1">ADMIN</option>
+                    </select>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-danger" id="delete-user-button" type="submit">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+<script>
+
+    let userInfo = null;
+
+    function getEditUserInfo(userId) {
+        if (userId) {
+            $.get({
+                url: '/api/users/' + userId,
+                success: (data) => {
+                    userInfo = data;
+                    setEditFormParams(userInfo);
+
+                },
+                error: (err) => {
+                    alert(err);
+                }
+
+            });
+        }
+
+    }
+
+    function getDeleteUserInfo(userId) {
+        if (userId) {
+            $.get({
+                url: '/api/users/' + userId,
+                success: (data) => {
+                    userInfo = data;
+                    setDeleteFormParams(userInfo);
+
+                },
+                error: (err) => {
+                    alert(err);
+                }
+
+            });
+        }
+
+    }
+
+    function setEditFormParams(data) {
+        let modal = $('#myModal');
+        modal.find('#user-id').val(data.id);
+        modal.find('#ageEdit').val(data.age);
+        modal.find('#passwordEdit').val(data.password);
+        modal.find('#emailEdit').val(data.email);
+        modal.find('#usernameEdit').val(data.username);
+        modal.find('#rolesEdit').val(data.users_roles)
+    }
+
+    function setDeleteFormParams(data) {
+        let modal = $('#myDeleteModal');
+        modal.find('#userIdDelete').val(data.id);
+        modal.find('#ageDelete').val(data.age);
+        modal.find('#passwordDelete').val(data.password);
+        modal.find('#emailDelete').val(data.email);
+        modal.find('#usernameDelete').val(data.username);
+        modal.find('#rolesDelete').val(data.users_roles)
+    }
+
+
+
+    $('.buttonEdit').on('click', function () {
+        let button = $(this);
+        let userId = button.data('id');
+        if (userId) {
+            getEditUserInfo(userId)
+        }
+    })
+
+    $('.buttonDelete').on('click', function () {
+        let button = $(this);
+        let userId = button.data('id');
+        if (userId) {
+            getDeleteUserInfo(userId)
+        }
+
+    })
+
+
+
+    $('#edit-user-button').click(function () {
+        let modal = $('#myModal')
+        function getRolesFromForm() {
+            const editForm = document.forms["editForm"];
+            let editUserRoles = [];
+            for (let i = 0; i < editForm.users_roles.options.length; i++) {
+                if (editForm.users_roles.options[i].selected)
+                    editUserRoles.push({
+                        id: editForm.users_roles.options[i].value,
+                        role: editForm.users_roles.options[i].text
+                    })
+            }
+            return editUserRoles;
+        }
+
+        let user = {
+            id: modal.find('#user-id').val(),
+            username: modal.find('#usernameEdit').val(),
+            age: modal.find('#ageEdit').val(),
+            password: modal.find('#passwordEdit').val(),
+            email: modal.find('#emailEdit').val(),
+            roles: getRolesFromForm(),
+        };
+
+        $.ajax({
+            url: '/api/users',
+            type: 'POST',
+            data: JSON.stringify(user),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: () => {
+                location.reload()
+            },
+            error: (err) => {
+                alert('1. Имя не может быть пустым и должно быть от 2 до 25 символов\n' +
+                    '2. Возраст может быть от 1 до 120\n' +
+                    '3. Адрес почты должен быть реальным');
+            }
+        })
+        modal.modal('hide');
+    });
+
+    $('#delete-user-button').click(function () {
+        let modal = $('#myDeleteModal')
+        let userId = modal.find('#userIdDelete').val();
+        if (userId) {
+            $.ajax({
+                url: '/api/users/' + userId,
+                type: 'DELETE',
+                success: () => {
+                    location.reload()
+                },
+                error: (err) => {
+                    alert(err);
+                }
+            })
+        }
+        modal.modal('hide');
+    });
+
+    $('#new-user-button').click(function () {
+        let tabForm = $('#addForm')
+        function getRolesFromAddForm() {
+            const editForm = document.forms["addForm"];
+            let editUserRoles = [];
+            for (let i = 0; i < editForm.users_roles.options.length; i++) {
+                if (editForm.users_roles.options[i].selected)
+                    editUserRoles.push({
+                        id: editForm.users_roles.options[i].value,
+                        role: editForm.users_roles.options[i].text
+                    })
+            }
+            return editUserRoles;
+        }
+
+        let user = {
+            username: tabForm.find('#username').val(),
+            age: tabForm.find('#age').val(),
+            password: tabForm.find('#password').val(),
+            email: tabForm.find('#email').val(),
+            roles: getRolesFromAddForm(),
+        };
+
+        $.ajax({
+            url: '/api/users',
+            type: 'POST',
+            data: JSON.stringify(user),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: () => {
+                location.reload()
+            },
+            error: (err) => {
+                alert('1. Имя не может быть пустым и должно быть от 2 до 25 символов\n' +
+                    '2. Возраст может быть от 1 до 120\n' +
+                    '3. Адрес почты должен быть реальным');
+            }
+        })
+
+    });
+
+</script>
 
 
 </body>
