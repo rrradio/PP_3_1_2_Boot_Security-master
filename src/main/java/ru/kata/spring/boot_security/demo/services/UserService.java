@@ -19,18 +19,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
 
     @Autowired
-    public UserService(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
-
-    @Autowired
-    public void  setUserRepository(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     public User findByUsername(String username) {
@@ -55,8 +51,19 @@ public class UserService implements UserDetailsService {
     }
 
     
-    public List<User> getUsers() {
+    public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+
+
+    public User getUserById(Long id) {
+        User user = findAll().stream().filter(u -> Objects.equals(u.getId(), id))
+                .findFirst().orElse(null);
+        if (user == null) {
+            throw new NullPointerException("Пользователь с указанным id не найден");
+        }
+        return user;
     }
 
     @Transactional
@@ -64,13 +71,11 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
-    public User getUserById(Long id) {
-        User user = getUsers().stream().filter(u -> Objects.equals(u.getId(), id))
-                .findFirst().orElse(null);
-        if (user == null) {
-            throw new NullPointerException("Пользователь с указанным id не найден");
-        }
-        return user;
+    @Transactional
+    public void save(User user) {
+        String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
     }
 
     @Transactional
@@ -87,6 +92,7 @@ public class UserService implements UserDetailsService {
         neew.setRoles(roles);
         userRepository.save(neew);
     }
+
 
 
 }

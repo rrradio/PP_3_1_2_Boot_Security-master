@@ -27,9 +27,9 @@
 
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
-        <b>  <span th:text="${user.email}"/>  </b> with roles: <span th:text="${#strings.replace(user.roles, 'ROLE_', '')}"></span>
-
-
+        <span class="fw-bold" id="authUserName"></span>
+        with roles:
+        <span id="authUserRole"></span>
         <a href="/logout" style="font-size: 20px;"> Logout</a>
     </a>
 </nav>
@@ -68,46 +68,9 @@
 
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr th:each="user : ${users}">
-                                <td style="font-family: Helvetica,sans-serif;" th:text="${user.id}"></td>
-                                <td style="font-family: Helvetica,sans-serif;" th:text="${user.username}"> </td>
-                                <td style="font-family: Helvetica,sans-serif;" th:text="${user.age}"></td>
-                                <td style="font-family: Helvetica,sans-serif;" th:text="${user.email}"></td>
-                                <td style="font-family: Helvetica,sans-serif;" th:text="${#strings.replace(#strings.replace(#strings.replace(user.roles, 'ROLE_', ''), '[', ''), ']', '')}"></td>
-                                <td >
-                                    <div class="form-row text-center">
-                                        <div class="col-12">
-                                            <button class="btn btn-primary buttonEdit " data-target="#myModal" data-toggle="modal"
-                                                    th:data-ID="${user.id}"
-                                                    th:data-username="${user.username}"
-                                                    th:data-age="${user.age}"
-                                                    th:data-email="${user.email}"
-                                                    th:data-password="${user.password}"
-                                                    th:data-roles="${user.roles}">
-                                                Edit
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
 
-                                <td>
-                                    <div class="form-row text-center">
-                                        <div class="col-12">
-                                            <button class="btn btn-danger buttonDelete"   data-target="#myDeleteModal" data-toggle="modal"
-                                                    th:data-ID="${user.id}"
-                                                    th:data-username="${user.username}"
-                                                    th:data-age="${user.age}"
-                                                    th:data-email="${user.email}"
-                                                    th:data-password="${user.password}"
-                                                    th:data-roles="${user.roles}"
-                                                    type="button">                    Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
+                                <tbody id="tbodyTable">
+                                </tbody>
                         </table>
                     </div>
 
@@ -136,8 +99,8 @@
 
                             <label for="users_roles" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Role </label>
                             <select class="form-control" id="users_roles" name="users_roles" multiple size="2" >
-                                <option id="roleAddUser" value="2">USER</option>
-                                <option id="roleAddAdmin" value="1">ADMIN</option>
+                                <option id="roleAddUser" value="1">USER</option>
+                                <option id="roleAddAdmin" value="2">ADMIN</option>
                             </select>
 
                             <br/>
@@ -158,9 +121,10 @@
 </div>
 
 <!-- Modal Edit User -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="userEditDialogLabel" aria-hidden="true">
+<div class="modal fade" id="myEditModal" tabindex="-1" role="dialog" aria-labelledby="userEditDialogLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+            <form id="editForm">
             <div class="modal-header">
                 <h5 class="modal-title" id="userEditDialogLabel" align="left" >Edit user</h5>
                 <button type="button"  class="close" data-dismiss="modal" aria-label="Close" style="float: right;">
@@ -168,10 +132,9 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editForm">
                     <div class="form-group">
-                        <label for="user-id" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> ID   </label>
-                        <input type="text" id = "user-id" class="form-control" size="20"   disabled/>
+                        <label for="userIdEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> ID   </label>
+                        <input type="text" id = "userIdEdit" class="form-control" size="20"   disabled/>
                     </div>
                     <div class="form-group">
                         <label for="usernameEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name   </label>
@@ -191,11 +154,12 @@
                     </div>
                     <label for="rolesEdit" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Role</label>
                     <select id="rolesEdit" class="form-control" name="users_roles" multiple size="2" >
-                        <option id="roleNewUser" value="2">USER</option>
-                        <option id="roleNewAdmin" value="1">ADMIN</option>
+                        <option id="roleNewUser" value="1">USER</option>
+                        <option id="roleNewAdmin" value="2">ADMIN</option>
                     </select>
-                </form>
+
             </div>
+            </form>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
                 <button class="btn btn-primary" name = "EDIT"  id="edit-user-button" type="submit">Edit</button>
@@ -208,37 +172,42 @@
 <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="userEditDialogLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="userDeleteDialogLabel" align="left" >Delete user</h5>
-                <button type="button"  class="close" data-dismiss="modal" aria-label="Close" style="float: right;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <form id="deleteForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userDeleteDialogLabel" align="left" >Delete user</h5>
+                    <button type="button" id="topCloseButtonDelete" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                 </div>
             <div class="modal-body">
-                <form id="deleteForm">
                     <div class="form-group">
-                        <label for="userIdDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> ID   </label>
-                        <input type="text" id="userIdDelete"   class="form-control" size="20" name="idDelete"  disabled/>
+                        <label for="userIdDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> ID
+                        <input type="text" id="userIdDelete"   class="form-control" size="20" name="id"  disabled/>
+                        </label>
                     </div>
                     <div class="form-group">
-                        <label for="usernameDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name   </label>
+                        <label for="usernameDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name
                         <input type="text" id="usernameDelete" class="form-control" name="username"   size="20" disabled/>
+                        </label>
                     </div>
                     <div class="form-group">
-                        <label for="ageDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Age   </label>
+                        <label for="ageDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Age
                         <input type="text" id="ageDelete" class="form-control" name = "age"   size="20" disabled/>
+                        </label>
                     </div>
                     <div class="form-group">
-                        <label for="emailDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Email  </label>
+                        <label for="emailDelete" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Email
                         <input type="text" id="emailDelete" class="form-control" name = "email"   size="20" disabled/>
+                        </label>
                     </div>
-                    <label for="rolesDelete" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Role</label>
+                    <label for="rolesDelete" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Role
                     <select  class="form-control" id="rolesDelete" name="users_roles" multiple size="2" disabled/>
                         <option  value="2">USER</option>
                         <option  value="1">ADMIN</option>
                     </select>
-                </form>
+                    </label>
             </div>
+            </form>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
                 <button class="btn btn-danger" id="delete-user-button" type="submit">Delete</button>
@@ -249,87 +218,127 @@
 
 <script>
 
-    let userInfo = null;
+    $(async function () {
+        await getAuthUser();
+        await getAllUsers();
+    })
 
-    function getEditUserInfo(userId) {
+    async function getAllUsers() {
+        const userTable = $('#tbodyTable');
+        userTable.empty();
+        fetch("/api/users/table")
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(user => {
+                    let tableWithUsers = `$(
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.username}</td>
+                            <td>${user.age}</td>
+                            <td>${user.email}</td>
+                            <td>${user.roles.map(role => " " + role.name.substring(5))}</td>
+                            <td>
+                                <button type="button" class="btn btn-info" data-toggle="modal"
+                                 data-id="${user.id}" data-target="#myEditModal">Edit</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" data-toggle="modal" id="buttonDelete"
+                                 data-id="${user.id}" data-target="#myDeleteModal">Delete</button>
+                            </td>
+                        </tr>)`;
+                    userTable.append(tableWithUsers);
+                })
+            }).catch(error => console.log(error))
+    }
+
+    async function getAuthUser() {
+        fetch("/api/users/user")
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('#authUserName').textContent = data.email;
+                document.querySelector('#authUserRole').textContent = (data.roles.map(role => " " + role.name.substring(5)).join(' '));
+                let user = `$(
+                    <tr>
+                    <td>${data.id}</td>
+                    <td>${data.username}</td>
+                    <td>${data.age}</td>
+                    <td>${data.email}</td>
+                    <td>${data.roles.map(role => " " + role.name.substring(5))}</td>)
+                    </tr>`;
+                $('#userInfo').append(user);
+            })
+            .catch(error => console.log(error))
+    }
+
+                                                // DELETE
+
+    $('#myDeleteModal').on('show.bs.modal', ev => {
+        let button = $(ev.relatedTarget);
+        let id = button.data('id');
+        showDeleteModal(id);
+    })
+
+    async function getUser(id) {
+        let response = await fetch("/api/users/" + id);
+        return await response.json();
+    }
+
+    async function showDeleteModal(id) {
+        let user = await getUser(id)
+        const form = document.forms["deleteForm"];
+
+        form.userIdDelete.value = user.id;
+        form.usernameDelete.value = user.username;
+        form.ageDelete.value = user.age;
+        form.emailDelete.value = user.email;
+        form.rolesDelete.value = user.users_roles
+
+    }
+
+    $('#delete-user-button').click(function () {
+        let modal = $('#myDeleteModal')
+        let userId = modal.find('#userIdDelete').val();
         if (userId) {
-            $.get({
+            $.ajax({
                 url: '/api/users/' + userId,
-                success: (data) => {
-                    userInfo = data;
-                    setEditFormParams(userInfo);
-
+                type: 'DELETE',
+                success: () => {
+                    $(async function () {
+                        await getAllUsers();
+                    })
                 },
                 error: (err) => {
                     alert(err);
                 }
-
-            });
+            })
         }
+        modal.modal('hide');
+    });
+
+                                                // EDIT
+    $('#myEditModal').on('show.bs.modal', (ev) => {
+        let button = $(ev.relatedTarget);
+        let id = button.data('id');
+        showEditModal(id);
+    });
+
+    
+    async function showEditModal(id) {
+
+        let user = await getUser(id);
+        const form = document.forms["editForm"];
+
+        form.userIdEdit.value = user.id;
+        form.usernameEdit.value = user.username;
+        form.ageEdit.value = user.age;
+        form.emailEdit.value = user.email;
+        form.passwordEdit.value = user.password;
+        form.rolesEdit.value = user.users_roles
 
     }
-
-    function getDeleteUserInfo(userId) {
-        if (userId) {
-            $.get({
-                url: '/api/users/' + userId,
-                success: (data) => {
-                    userInfo = data;
-                    setDeleteFormParams(userInfo);
-
-                },
-                error: (err) => {
-                    alert(err);
-                }
-
-            });
-        }
-
-    }
-
-    function setEditFormParams(data) {
-        let modal = $('#myModal');
-        modal.find('#user-id').val(data.id);
-        modal.find('#ageEdit').val(data.age);
-        modal.find('#passwordEdit').val(data.password);
-        modal.find('#emailEdit').val(data.email);
-        modal.find('#usernameEdit').val(data.username);
-        modal.find('#rolesEdit').val(data.users_roles)
-    }
-
-    function setDeleteFormParams(data) {
-        let modal = $('#myDeleteModal');
-        modal.find('#userIdDelete').val(data.id);
-        modal.find('#ageDelete').val(data.age);
-        modal.find('#passwordDelete').val(data.password);
-        modal.find('#emailDelete').val(data.email);
-        modal.find('#usernameDelete').val(data.username);
-        modal.find('#rolesDelete').val(data.users_roles)
-    }
-
-
-
-    $('.buttonEdit').on('click', function () {
-        let button = $(this);
-        let userId = button.data('id');
-        if (userId) {
-            getEditUserInfo(userId)
-        }
-    })
-
-    $('.buttonDelete').on('click', function () {
-        let button = $(this);
-        let userId = button.data('id');
-        if (userId) {
-            getDeleteUserInfo(userId)
-        }
-
-    })
-
-
 
     $('#edit-user-button').click(function () {
-        let modal = $('#myModal')
+        let modal = $('#myEditModal')
         function getRolesFromForm() {
             const editForm = document.forms["editForm"];
             let editUserRoles = [];
@@ -344,7 +353,7 @@
         }
 
         let user = {
-            id: modal.find('#user-id').val(),
+            id: modal.find('#userIdEdit').val(),
             username: modal.find('#usernameEdit').val(),
             age: modal.find('#ageEdit').val(),
             password: modal.find('#passwordEdit').val(),
@@ -359,7 +368,9 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: () => {
-                location.reload()
+                $(async function () {
+                    await getAllUsers();
+                })
             },
             error: (err) => {
                 alert('1. Имя не может быть пустым и должно быть от 2 до 25 символов\n' +
@@ -370,23 +381,7 @@
         modal.modal('hide');
     });
 
-    $('#delete-user-button').click(function () {
-        let modal = $('#myDeleteModal')
-        let userId = modal.find('#userIdDelete').val();
-        if (userId) {
-            $.ajax({
-                url: '/api/users/' + userId,
-                type: 'DELETE',
-                success: () => {
-                    location.reload()
-                },
-                error: (err) => {
-                    alert(err);
-                }
-            })
-        }
-        modal.modal('hide');
-    });
+                                            //ADD
 
     $('#new-user-button').click(function () {
         let tabForm = $('#addForm')
@@ -418,16 +413,22 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: () => {
-                location.reload()
+                tabForm.reset();
+                $(async function () {
+                    await getAllUsers();
+                })
             },
-            error: (err) => {
+            error: () => {
                 alert('1. Имя не может быть пустым и должно быть от 2 до 25 символов\n' +
                     '2. Возраст может быть от 1 до 120\n' +
                     '3. Адрес почты должен быть реальным');
             }
+
         })
 
     });
+
+
 
 </script>
 
