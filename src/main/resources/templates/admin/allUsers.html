@@ -69,8 +69,7 @@
                             </tr>
                             </thead>
 
-                                <tbody id="tbodyTable">
-                                </tbody>
+                                <tbody id="tbodyTable"></tbody>
                         </table>
                     </div>
 
@@ -83,12 +82,12 @@
                             <form id="addForm">
                             <label for="username"  style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;" > Name </label>
                             <input type="text" class="form-control" placeholder="name"  id="username"
-                                   required pattern="^[A-Za-z0-9]{2,25}$" title="Please enter a name between 2 and 25 characters" >
+                                   required pattern="^.{2,25}$" title="Please enter a name between 2 and 25 characters" >
                             <br/>
 
                             <label for="age" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Age </label>
                             <input type="number" class="form-control" placeholder="age"  id="age"
-                                   required min="1" max="120" title="Please enter a number between 1 and 120"  >
+                                   required min="2" max="120" title="Please enter a number between 1 and 120"  >
                             <br/>
 
                             <label for="email" style="text-align:center; font-weight:bold; font-size:20px; display: block; margin: 0 auto;"> Email </label>
@@ -108,7 +107,7 @@
                             </select>
 
                             <br/>
-                            <input type="submit" value="Add new user" id="new-user-button" class="btn btn-success" style="display: block; margin: 0 auto;">
+                            <input type="submit" value="Add new user" id="newUserButton" class="btn btn-success" style="display: block; margin: 0 auto;">
                         </form>
 
                         </div>
@@ -142,13 +141,12 @@
                     </div>
                     <div class="form-group">
                         <label for="usernameEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;"> Name   </label>
-                        <input type="text" class="form-control" name="username"  id="usernameEdit" size="20"
-                               required pattern="^[A-Za-z0-9]{2,25}$" title="Please enter a name between 2 and 25 characters">
+                        <input type="text" class="form-control" name="username"  id="usernameEdit" size="20">
                     </div>
                     <div class="form-group">
                         <label for="ageEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Age   </label>
                         <input type="number" class="form-control" name = "age"  id="ageEdit" size="20"
-                               required min="1" max="120" title="Please enter a number between 1 and 120" >
+                               required min="2" max="120" title="Please enter a number between 1 and 120" >
                     </div>
                     <div class="form-group">
                         <label for="emailEdit" class="col-form-label" style="font-weight:bold; font-size:18px; display: block; margin: 0 auto;">Email  </label>
@@ -170,7 +168,7 @@
             </form>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                <button class="btn btn-primary" name = "EDIT"  id="edit-user-button" type="submit">Edit</button>
+                <button class="btn btn-primary" name = "EDIT" id="editUserButton" type="submit">Edit</button>
             </div>
         </div>
     </div>
@@ -219,7 +217,7 @@
             </form>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                <button class="btn btn-danger" id="delete-user-button" type="submit">Delete</button>
+                <button class="btn btn-danger" id="deleteUserButton" type="submit">Delete</button>
             </div>
         </div>
     </div>
@@ -303,7 +301,7 @@
 
     }
 
-    $('#delete-user-button').click(function () {
+    $('#deleteUserButton').click(function () {
         let modal = $('#myDeleteModal')
         let userId = modal.find('#userIdDelete').val();
         if (userId) {
@@ -342,7 +340,7 @@
 
     }
 
-    $('#edit-user-button').click(function () {
+    $('#editUserButton').click(function () {
         let modal = $('#myEditModal')
 
         function getRolesFromForm() {
@@ -390,7 +388,7 @@
 
                                             //ADD
 
-    $('#new-user-button').click(function () {
+    $('#newUserButton').click(function () {
         let tabForm = $('#addForm')
         function getRolesFromAddForm() {
             const editForm = document.forms["addForm"];
@@ -408,8 +406,8 @@
         let user = {
             username: tabForm.find('#username').val(),
             age: tabForm.find('#age').val(),
-            password: tabForm.find('#password').val(),
             email: tabForm.find('#email').val(),
+            password: tabForm.find('#password').val(),
             roles: getRolesFromAddForm(),
         };
 
@@ -420,12 +418,17 @@
             data: JSON.stringify(user),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success:function(response) {
-                location.reload()
+            success: () => {
+                $(async function () {
+                    await getAllUsers();
+                })
             }
         })
 
+
     });
+
+
 
 </script>
 
